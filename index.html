@@ -2,104 +2,115 @@
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Alchiroq App</title>
-    <script src="https://sad.adsgram.ai/js/adsgram-ad-sdk.js"></script>
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background-color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --primary-color: #6366f1;
+            --bg-color: #0f172a;
         }
 
-        /* Yuklanish animatsiyasi stili */
-        #loader {
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Chiroyli Animatsiya Dizayni */
+        #loader-container {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: none; /* Dastlab yashirin bo'ladi */
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: #ffffff;
-            z-index: 9999;
+            z-index: 10000;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
         }
 
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid #f3f3f3;
-            border-top: 6px solid #0088cc; /* Telegram ko'k rangi */
+        .loader-circle {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left-color: var(--primary-color);
             border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
         }
 
         .loading-text {
-            margin-top: 20px;
-            font-size: 18px;
-            color: #333;
-            font-weight: 500;
+            margin-top: 25px;
+            color: #ffffff;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            font-weight: 300;
+            text-transform: uppercase;
+            animation: pulse 2s infinite;
         }
 
-        /* Asosiy sayt ramkasi */
-        iframe {
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Iframe sozlamalari */
+        #mainApp {
             width: 100%;
             height: 100%;
             border: none;
             display: none;
+            background: white;
         }
     </style>
 </head>
 <body>
 
-    <div id="loader">
-        <div class="spinner"></div>
-        <div class="loading-text">Ilovaga ulanmoqda...</div>
+    <div id="loader-container">
+        <div class="loader-circle"></div>
+        <div class="loading-text">Yuklanmoqda...</div>
     </div>
 
-    <iframe id="mainApp" src="https://app.alchiroq.uz"></iframe>
+    <iframe id="mainApp" src="https://app.alchiroq.uz" allow="autoplay; fullscreen"></iframe>
 
     <script>
-        const loader = document.getElementById('loader');
+        // 1. Adsgram sozlamalari (O'zingizning blockId'ingizni qo'ying)
+        const blockId = "int-25479"; // <--- BU YERGA ID QO'YING
+        const AdController = window.Adsgram.init({ blockId: blockId });
+
+        const loader = document.getElementById('loader-container');
         const iframe = document.getElementById('mainApp');
-        
-        // Adsgram ID (O'zingiznikini qo'ying, hozircha test ID: 2754)
-        const AdController = window.Adsgram.init({ blockId: "int-25479" });
 
         window.onload = function() {
-            // 1. REKLAMANI KO'RSATISH
-            AdController.show()
-                .then(() => {
-                    // Reklama muvaffaqiyatli ko'rildi
-                    runAnimationAndOpen();
-                })
-                .catch((err) => {
-                    // Reklama yuklanmasa ham ilova ochilishi kerak
-                    console.error("Reklama xatosi:", err);
-                    runAnimationAndOpen();
-                });
+            // Birinchi navbatda 3 sekundlik animatsiya
+            setTimeout(() => {
+                showAds();
+            }, 3000);
         };
 
-        function runAnimationAndOpen() {
-            // 2. ANIMATSIYANI BOSHLASH
-            loader.style.display = 'flex';
+        function showAds() {
+            // Reklamani chaqirish
+            AdController.show().then((result) => {
+                // Reklama muvaffaqiyatli ko'rildi yoki yopildi
+                enterApp();
+            }).catch((result) => {
+                // Reklama yuklanmasa ham (xatolik bo'lsa) saytga kirish
+                console.log("Adsgram error or skipped:", result);
+                enterApp();
+            });
+        }
 
-            // 3. 3 SEKUND KUTISH VA SAYTGA KIRISH
-            setTimeout(() => {
-                loader.style.display = 'none';
-                iframe.style.display = 'block';
-            }, 3000); // 3000 millisoniya = 3 sekund
+        function enterApp() {
+            // Animatsiyani o'chirish va saytni chiqarish
+            loader.style.display = 'none';
+            iframe.style.display = 'block';
         }
     </script>
 </body>
