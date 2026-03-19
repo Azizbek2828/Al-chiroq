@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alchiroq App</title>
+    <script src="https://sad.adsgram.ai/js/adsgram-ad-sdk.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: sans-serif;
+            background-color: #ffffff;
+        }
+
+        /* Yuklanish animatsiyasi */
+        #loader {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Asosiy sayt ramkasi */
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: none; /* Reklama tugaguncha yashirin turadi */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <p>Yuklanmoqda...</p>
+    </div>
+
+    <iframe id="mainApp" src="https://app.alchiroq.uz"></iframe>
+
+    <script>
+        // Adsgram sozlamalari
+        // BU YERGA O'ZINGIZNING BLOCK_ID RAQAMINGIZNI YOZING
+        const AdController = window.Adsgram.init({ blockId: "YOUR_BLOCK_ID_HERE" });
+
+        window.onload = function() {
+            // Sahifa yuklangach reklamani ko'rsatish
+            AdController.show().then((result) => {
+                // Reklama muvaffaqiyatli ko'rsatilganda yoki yopilganda
+                startApp();
+            }).catch((result) => {
+                // Reklama yuklanmasa yoki xatolik bo'lsa ham ilovani ochish
+                console.error("Adsgram xatosi:", result);
+                startApp();
+            });
+        };
+
+        function startApp() {
+            // Loaderni yashirish va saytni ko'rsatish
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
