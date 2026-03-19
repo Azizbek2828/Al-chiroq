@@ -12,28 +12,30 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
-            font-family: sans-serif;
             background-color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Yuklanish animatsiyasi */
+        /* Yuklanish animatsiyasi stili */
         #loader {
             position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: #fff;
-            display: flex;
+            display: none; /* Dastlab yashirin bo'ladi */
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            background: #ffffff;
             z-index: 9999;
         }
 
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid #f3f3f3;
-            border-top: 5px solid #3498db;
+            width: 60px;
+            height: 60px;
+            border: 6px solid #f3f3f3;
+            border-top: 6px solid #0088cc; /* Telegram ko'k rangi */
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -43,12 +45,19 @@
             100% { transform: rotate(360deg); }
         }
 
+        .loading-text {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+            font-weight: 500;
+        }
+
         /* Asosiy sayt ramkasi */
         iframe {
             width: 100%;
             height: 100%;
             border: none;
-            display: none; /* Reklama tugaguncha yashirin turadi */
+            display: none;
         }
     </style>
 </head>
@@ -56,32 +65,41 @@
 
     <div id="loader">
         <div class="spinner"></div>
-        <p>Yuklanmoqda...</p>
+        <div class="loading-text">Ilovaga ulanmoqda...</div>
     </div>
 
     <iframe id="mainApp" src="https://app.alchiroq.uz"></iframe>
 
     <script>
-        // Adsgram sozlamalari
-        // BU YERGA O'ZINGIZNING BLOCK_ID RAQAMINGIZNI YOZING
-        const AdController = window.Adsgram.init({ blockId: "YOUR_BLOCK_ID_HERE" });
+        const loader = document.getElementById('loader');
+        const iframe = document.getElementById('mainApp');
+        
+        // Adsgram ID (O'zingiznikini qo'ying, hozircha test ID: 2754)
+        const AdController = window.Adsgram.init({ blockId: "int-25479" });
 
         window.onload = function() {
-            // Sahifa yuklangach reklamani ko'rsatish
-            AdController.show().then((result) => {
-                // Reklama muvaffaqiyatli ko'rsatilganda yoki yopilganda
-                startApp();
-            }).catch((result) => {
-                // Reklama yuklanmasa yoki xatolik bo'lsa ham ilovani ochish
-                console.error("Adsgram xatosi:", result);
-                startApp();
-            });
+            // 1. REKLAMANI KO'RSATISH
+            AdController.show()
+                .then(() => {
+                    // Reklama muvaffaqiyatli ko'rildi
+                    runAnimationAndOpen();
+                })
+                .catch((err) => {
+                    // Reklama yuklanmasa ham ilova ochilishi kerak
+                    console.error("Reklama xatosi:", err);
+                    runAnimationAndOpen();
+                });
         };
 
-        function startApp() {
-            // Loaderni yashirish va saytni ko'rsatish
-            document.getElementById('loader').style.display = 'none';
-            document.getElementById('mainApp').style.display = 'block';
+        function runAnimationAndOpen() {
+            // 2. ANIMATSIYANI BOSHLASH
+            loader.style.display = 'flex';
+
+            // 3. 3 SEKUND KUTISH VA SAYTGA KIRISH
+            setTimeout(() => {
+                loader.style.display = 'none';
+                iframe.style.display = 'block';
+            }, 3000); // 3000 millisoniya = 3 sekund
         }
     </script>
 </body>
