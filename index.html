@@ -3,115 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Alchiroq App</title>
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+    <title>Real Crane 4D Pro</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary-color: #6366f1;
-            --bg-color: #0f172a;
+        body {
+            margin: 0; padding: 0; background: #050505;
+            color: white; font-family: 'Segoe UI', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; overflow: hidden; touch-action: none;
+        }
+        .machine {
+            width: 95vw; max-width: 400px; height: 90vh;
+            background: #1a1a1a; border: 4px solid #333;
+            border-radius: 20px; display: flex; flex-direction: column;
+            position: relative; box-shadow: 0 0 40px rgba(0,0,0,0.9);
+            perspective: 1000px;
+        }
+        .info {
+            padding: 15px; text-align: center; border-bottom: 3px solid #333;
+            background: #000; border-radius: 20px 20px 0 0; z-index: 20;
+        }
+        #bal-val { color: #00ffcc; font-size: 24px; font-weight: bold; text-shadow: 0 0 10px #00ffcc; }
+        
+        .game-area {
+            flex: 2; margin: 10px; background: #080808;
+            border: 2px solid #222; position: relative; overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,255,204,0.1);
+        }
+        
+        /* REALISTIK 4D ILGAK */
+        #crane-head {
+            position: absolute; top: 0; left: 50%;
+            width: 50px; height: 25px; transform: translateX(-50%); z-index: 10;
+            background: linear-gradient(#555, #222); border-radius: 0 0 5px 5px;
+        }
+        #rope {
+            position: absolute; top: 20px; left: 24px;
+            width: 3px; height: 0; background: #999;
+            transition: height 1.2s ease-in-out;
+            background: repeating-linear-gradient(0deg, #777, #777 2px, #333 4px);
+        }
+        .claw-body {
+            position: absolute; bottom: -20px; left: -23px;
+            width: 50px; height: 20px;
+        }
+        .arm {
+            position: absolute; width: 6px; height: 30px;
+            background: linear-gradient(#eee, #666);
+            border-radius: 3px; transform-origin: top center; transition: 0.3s;
+        }
+        .arm-l { left: 10px; transform: rotate(-45deg); }
+        .arm-r { right: 10px; transform: rotate(45deg); }
+        .arm-m { left: 22px; height: 25px; transform: rotate(0deg); opacity: 0.6; }
+
+        .closed .arm-l { transform: rotate(10deg); }
+        .closed .arm-r { transform: rotate(-10deg); }
+        .closed .arm-m { transform: scaleY(1.2); }
+
+        /* SOVG'ALAR MAYDONI */
+        .floor {
+            position: absolute; bottom: 0; width: 100%;
+            height: 70px; display: flex; justify-content: space-around;
+            align-items: center; padding: 0 5px; background: rgba(255,255,255,0.02);
+        }
+        .box {
+            font-size: 32px; filter: drop-shadow(0 5px 5px black);
+            position: relative; z-index: 5; transition: 0.3s;
         }
 
-        body, html {
-            margin: 0; padding: 0;
-            width: 100%; height: 100%;
-            overflow: hidden;
-            background-color: var(--bg-color);
-            font-family: 'Inter', sans-serif;
+        /* BOSHQARUV */
+        .controls {
+            flex: 1.2; background: #111; display: flex;
+            justify-content: space-around; align-items: center;
+            border-top: 4px solid #333; border-radius: 0 0 20px 20px;
         }
-
-        /* Chiroyli Animatsiya Dizayni */
-        #loader-container {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+        .joy-base {
+            width: 110px; height: 110px; background: #222;
+            border-radius: 50%; position: relative; border: 3px solid #000;
         }
-
-        .loader-circle {
-            width: 80px;
-            height: 80px;
-            border: 4px solid rgba(255, 255, 255, 0.1);
-            border-left-color: var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-            box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+        #stick {
+            width: 50px; height: 50px; background: #ff4444;
+            border-radius: 50%; position: absolute; left: 30px; top: 30px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5); z-index: 5; transition: transform 0.1s;
         }
-
-        .loading-text {
-            margin-top: 25px;
-            color: #ffffff;
-            font-size: 1.2rem;
-            letter-spacing: 2px;
-            font-weight: 300;
-            text-transform: uppercase;
-            animation: pulse 2s infinite;
+        .btn-grab {
+            width: 100px; height: 100px; border-radius: 50%;
+            background: #00ff88; border: none; font-weight: bold;
+            box-shadow: 0 6px 0 #008844; cursor: pointer; color: black;
         }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-
-        /* Iframe sozlamalari */
-        #mainApp {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: none;
-            background: white;
-        }
+        .btn-grab:active { transform: translateY(4px); box-shadow: 0 2px 0 #008844; }
     </style>
 </head>
 <body>
 
-    <div id="loader-container">
-        <div class="loader-circle"></div>
-        <div class="loading-text">Yuklanmoqda...</div>
+<div class="machine">
+    <div class="info">
+        BALANS: <span id="bal-val">100,000</span> UZS
+        <div id="status" style="font-size:10px; color:#666; margin-top:5px; text-transform: uppercase;">Tayyor</div>
     </div>
 
-    <iframe id="mainApp" src="https://app.alchiroq.uz" allow="autoplay; fullscreen"></iframe>
+    <div class="game-area" id="game-area">
+        <div id="crane-head">
+            <div id="rope">
+                <div class="claw-body" id="claw">
+                    <div class="arm arm-l"></div>
+                    <div class="arm arm-r"></div>
+                    <div class="arm arm-m"></div>
+                    <div id="item" style="position:absolute; top:15px; left:12px; font-size:24px;"></div>
+                </div>
+            </div>
+        </div>
+        <div class="floor" id="floor"></div>
+    </div>
 
-    <script>
-        // 1. Adsgram sozlamalari (O'zingizning blockId'ingizni qo'ying)
-        const blockId = "int-25479"; // <--- BU YERGA ID QO'YING
-        const AdController = window.Adsgram.init({ blockId: blockId });
+    <div class="controls">
+        <div class="joy-base" id="joy-area">
+            <div id="stick"></div>
+        </div>
+        <button class="btn-grab" onclick="grab()">OLISH<br>2000</button>
+    </div>
+</div>
 
-        const loader = document.getElementById('loader-container');
-        const iframe = document.getElementById('mainApp');
+<script>
+    let balance = 100000;
+    let craneX = 50;
+    let active = false;
+    let audioCtx = null;
 
-        window.onload = function() {
-            // Birinchi navbatda 3 sekundlik animatsiya
-            setTimeout(() => {
-                showAds();
-            }, 3000);
-        };
+    // --- AUDIO ENGINE ---
+    function initAudio() {
+        if (!audioCtx) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+    }
 
-        function showAds() {
-            // Reklamani chaqirish
-            AdController.show().then((result) => {
-                // Reklama muvaffaqiyatli ko'rildi yoki yopildi
-                enterApp();
-            }).catch((result) => {
-                // Reklama yuklanmasa ham (xatolik bo'lsa) saytga kirish
-                console.log("Adsgram error or skipped:", result);
-                enterApp();
-            });
+    function playSound(freq, type, duration, vol = 0.1) {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }
+
+    function playMotor(duration) {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }
+
+    // --- GAME LOGIC ---
+    const giftIcons = [
+        { icon: 'fa-gem', color: '#00d4ff' },
+        { icon: 'fa-coins', color: '#ffd700' },
+        { icon: 'fa-gift', color: '#ff4757' },
+        { icon: 'fa-money-bill-wave', color: '#2ecc71' },
+        { icon: 'fa-piggy-bank', color: '#ff9ff3' }
+    ];
+
+    function init() {
+        const floor = document.getElementById('floor');
+        floor.innerHTML = '';
+        for(let i=0; i<5; i++) {
+            let item = giftIcons[Math.floor(Math.random()*giftIcons.length)];
+            let b = document.createElement('div');
+            b.className = 'box';
+            b.style.color = item.color;
+            b.innerHTML = `<i class="fas ${item.icon}"></i>`;
+            b.dataset.val = [1000, 2000, 3000, 4000][Math.floor(Math.random()*4)];
+            floor.appendChild(b);
+        }
+    }
+    window.onload = init;
+
+    const stick = document.getElementById('stick');
+    const area = document.getElementById('joy-area');
+    let dragging = false;
+
+    function move(e) {
+        if(!dragging || active) return;
+        initAudio(); // Tovushni faollashtirish
+        const r = area.getBoundingClientRect();
+        const cx = e.touches ? e.touches[0].clientX : e.clientX;
+        let x = cx - (r.left + r.width/2);
+        x = Math.max(-35, Math.min(35, x));
+        stick.style.transform = `translate(${x}px, 0)`;
+
+        if(x > 10 && craneX < 90) craneX += 1.5;
+        if(x < -10 && craneX > 10) craneX -= 1.5;
+        document.getElementById('crane-head').style.left = craneX + '%';
+    }
+
+    area.addEventListener('touchstart', () => dragging = true);
+    area.addEventListener('mousedown', () => dragging = true);
+    window.addEventListener('touchend', () => {dragging = false; stick.style.transform = 'translate(0,0)';});
+    window.addEventListener('mouseup', () => {dragging = false; stick.style.transform = 'translate(0,0)';});
+    window.addEventListener('touchmove', move);
+    window.addEventListener('mousemove', move);
+
+    async function grab() {
+        if(active || balance < 2000) return;
+        initAudio();
+        active = true;
+        balance -= 2000;
+        document.getElementById('bal-val').innerText = balance.toLocaleString();
+        
+        const rope = document.getElementById('rope');
+        const claw = document.getElementById('claw');
+        const item = document.getElementById('item');
+        const status = document.getElementById('status');
+
+        playSound(600, 'square', 0.1);
+        status.innerText = "TUSHMOQDA...";
+        claw.classList.remove('closed');
+        rope.style.height = "220px";
+        playMotor(1.2);
+        await new Promise(r => setTimeout(r, 1200));
+
+        const boxes = document.querySelectorAll('.box');
+        const cRect = claw.getBoundingClientRect();
+        let target = null;
+
+        boxes.forEach(b => {
+            const bRect = b.getBoundingClientRect();
+            const d = Math.abs((bRect.left + bRect.width/2) - (cRect.left + cRect.width/2));
+            if(d < 25) target = b;
+        });
+
+        claw.classList.add('closed');
+        playSound(300, 'sine', 0.2);
+        
+        let win = 0;
+        if(target && Math.random() > 0.3) {
+            win = parseInt(target.dataset.val);
+            item.innerHTML = target.innerHTML;
+            item.style.color = target.style.color;
+            target.style.visibility = 'hidden';
         }
 
-        function enterApp() {
-            // Animatsiyani o'chirish va saytni chiqarish
-            loader.style.display = 'none';
-            iframe.style.display = 'block';
+        await new Promise(r => setTimeout(r, 500));
+        rope.style.height = "0";
+        playMotor(1.2);
+        await new Promise(r => setTimeout(r, 1200));
+
+        if(win > 0) {
+            balance += win;
+            status.innerText = "YUTUQ: " + win + " UZS!";
+            status.style.color = "#00ffcc";
+            playSound(800, 'sine', 0.1);
+            setTimeout(() => playSound(1200, 'sine', 0.4), 100);
+        } else {
+            status.innerText = "OMADSIZ URINISH!";
+            status.style.color = "#ff4444";
+            playSound(150, 'triangle', 0.4);
         }
-    </script>
+
+        setTimeout(() => {
+            item.innerHTML = "";
+            claw.classList.remove('closed');
+            status.innerText = "TAYYOR";
+            status.style.color = "#666";
+            active = false;
+            init();
+            document.getElementById('bal-val').innerText = balance.toLocaleString();
+        }, 1500);
+    }
+</script>
 </body>
 </html>
